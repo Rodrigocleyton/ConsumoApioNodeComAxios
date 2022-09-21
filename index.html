@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>consumoApi</title>
+    <style>
+        .form{
+            background-color: black;
+            color: white;
+            width: 800px;
+            height: 400px;
+            background-image: url(1638985154968.jpg);
+        }
+
+    </style>
+    <hr>
+    <h4>Lista de funcionarios</h4>
+        <ul id="funcionarios"></ul>
+    <hr>
+    <div class="form">
+    <h4>Novo funcionario</h4>
+    <input type="text" name="id" id="id" placeholder="id"><br>
+    <input type="text" name="nome" id="nome" placeholder="Nome"><br>
+    <input type="text" name="sobrenome" id="sobrenome"        placeholder="SobreNome"><br>
+    <input type="text" name="email" id="email" placeholder="Email"><br>
+    <input type="text" name="cidade" id="cidade" placeholder="Cidade"><br>
+    <button type="button" onclick="newFuncionario()">Criar</button>
+    </div>
+</head>
+<body>
+    
+</body>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<!--script de criação de novo funcionario-->
+<script>
+
+    function newFuncionario(){
+        var nameInput = document.getElementById("nome")
+        var sobrenomeInput = document.getElementById("sobrenome")
+        var emailInput = document.getElementById("email")
+        var cidadeInput = document.getElementById("cidade")
+
+        var funcionario = {
+            nome: nameInput.value,
+            sobrenome: sobrenomeInput.value,
+            email: emailInput.value,
+            cidade:cidadeInput.value
+
+        }
+//console.log(funcionario)
+        axios.post("http://localhost:3000/cadastro/",funcionario).then(response=>{
+            //depois melhor essa mensagem de alerta
+            if(response.status == 200){
+                alert("funcionario cadastrado!")
+            }
+        }).catch(err=>{
+            console.log("ocorreu um erro!", err)
+        })
+
+    }
+  
+
+
+
+  
+ axios.get("http://localhost:3000/cadastro/funcionarios").then(response=>{
+    var funcionarios = response.data;
+    var list = document.getElementById("funcionarios")
+
+function deleteFuncionario(funcionarioItem){
+    var nome = funcionarioItem.getAttribute("data-nome")
+    axios.delete("http://localhost:3000/cadastro/" + nome).then(response =>{
+        alert("Funcionario deletado!")
+    }).catch(err=>{
+        console.log(err)
+    })
+    console.log(nome)
+/*pode ser por id 
+    var id = funcionarioItem.getAttribute("data-id")
+    console.log(id)
+*/
+}
+
+    funcionarios.forEach(element => {
+        //console.log(element)
+        //para cada elemento será realizada uma açao, será criado um funcionario, ou item de lista
+        var novoFuncionario = document.createElement("li")
+        //feito depois
+        // adicionar atributos presonalizados, data-id recebe o valor de funcionario.id
+       // novoFuncionario.setAttribute("data-id", element.id)
+        novoFuncionario.setAttribute("data-nome", element.nome)
+        novoFuncionario.setAttribute("data-sobrenome", element.sobrenome)
+        novoFuncionario.setAttribute("data-email", element.email)
+        novoFuncionario.setAttribute("data-cidade", element.cidade)
+        
+        //ainda não está recebendo o id do mongobd
+        novoFuncionario.innerHTML =element.id +" - " +  element.nome + " - " + element.sobrenome + " - " + element.email + " - " + element.cidade;//carrega os nomes na pasta
+
+        //criação de button dinamicamente
+        var deleteBtn = document.createElement("button")
+        //nomeia o botao
+        deleteBtn.innerHTML = "Deletar"
+        deleteBtn.addEventListener("click", function () {
+            deleteFuncionario(novoFuncionario)
+        } )
+        //para cada elemento da lista add um botao
+        novoFuncionario.appendChild(deleteBtn)
+
+        //para adicionar esse elemento a lista é chamada a função appendChild("adicionar filho")
+        list.appendChild(novoFuncionario)
+    });
+
+ }).catch(err =>{
+    console.log("Erro no axios", err)
+ })
+</script>
+ <!-- O then retorna os dados vindo da requisição, nesse caso o cadastro de funcionarios--> 
+</html>
