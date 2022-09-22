@@ -4,30 +4,38 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>consumoApi</title>
+    <title>loja de Games</title>
     <style>
         .form{
             background-color: black;
             color: white;
             width: 800px;
             height: 400px;
-            background-image: url(1638985154968.jpg);
+          
         }
 
     </style>
     <hr>
-    <h4>Lista de funcionarios</h4>
-        <ul id="funcionarios"></ul>
+    <h4>Lista de games</h4>
+        <ul id="games"></ul>
     <hr>
-    <div class="form">
-    <h4>Novo funcionario</h4>
-    <input type="text" name="id" id="id" placeholder="id"><br>
-    <input type="text" name="nome" id="nome" placeholder="Nome"><br>
-    <input type="text" name="sobrenome" id="sobrenome"        placeholder="SobreNome"><br>
-    <input type="text" name="email" id="email" placeholder="Email"><br>
-    <input type="text" name="cidade" id="cidade" placeholder="Cidade"><br>
-    <button type="button" onclick="newFuncionario()">Criar</button>
-    </div>
+    
+    <h4>Novo game</h4>
+    <input type="text" name="title" id="title" placeholder="Title"><br>
+    <input type="number" name="year" id="year"        placeholder="Year"><br>
+    <input type="number" name="price" id="price" placeholder="price"><br>
+    <button type="button" onclick="newGame()">Criar</button>
+
+    <h4>Editar games</h4>
+    <input type="text" name="idEdit" id="idEdit" placeholder="ID" readonly><br>
+    <input type="text" name="titleEdit" id="titleEdit" placeholder="Title"><br>
+    <input type="number" name="yearEdit" id="yearEdit"        placeholder="Year"><br>
+    <input type="number" name="priceEdit" id="priceEdit" placeholder="price"><br>
+    <button type="button" onclick="updateGame()">Editar</button>
+    
+
+
+    
 </head>
 <body>
     
@@ -37,85 +45,133 @@
 <!--script de criação de novo funcionario-->
 <script>
 
-    function newFuncionario(){
-        var nameInput = document.getElementById("nome")
-        var sobrenomeInput = document.getElementById("sobrenome")
-        var emailInput = document.getElementById("email")
-        var cidadeInput = document.getElementById("cidade")
+    function newGame(){
+       
+        var titleInput = document.getElementById("title")
+        var yearInput = document.getElementById("year")
+        var priceInput = document.getElementById("price")
 
-        var funcionario = {
-            nome: nameInput.value,
-            sobrenome: sobrenomeInput.value,
-            email: emailInput.value,
-            cidade:cidadeInput.value
-
-        }
+        var game = {
+            title: titleInput.value,
+            year: yearInput.value,
+            price: priceInput.value
+           }
 //console.log(funcionario)
-        axios.post("http://localhost:3000/cadastro/",funcionario).then(response=>{
+    axios.post("http://localhost:3000/game",game).then(response=>{
             //depois melhor essa mensagem de alerta
-            if(response.status == 200){
-                alert("funcionario cadastrado!")
-            }
-        }).catch(err=>{
+        if(response.status == 200){
+                alert("Game cadastrado!")
+                
+        }
+    }).catch(err=>{
             console.log("ocorreu um erro!", err)
-        })
+    })
 
-    }
+}
   
 
-
-
-  
- axios.get("http://localhost:3000/cadastro/funcionarios").then(response=>{
-    var funcionarios = response.data;
-    var list = document.getElementById("funcionarios")
-
-function deleteFuncionario(funcionarioItem){
-    var nome = funcionarioItem.getAttribute("data-nome")
-    axios.delete("http://localhost:3000/cadastro/" + nome).then(response =>{
-        alert("Funcionario deletado!")
+    function deleteGame(listItem){
+    var id = listItem.getAttribute("data-id")
+    axios.delete("http://localhost:3000/game/" + id).then(response =>{
+        alert("game deletado!")
     }).catch(err=>{
         console.log(err)
     })
-    console.log(nome)
+    console.log(id)
 /*pode ser por id 
-    var id = funcionarioItem.getAttribute("data-id")
+    var id = item.getAttribute("data-id")
     console.log(id)
 */
 }
 
-    funcionarios.forEach(element => {
+function loadForm(listItem){
+    var id = listItem.getAttribute("data-id")
+    var title= listItem.getAttribute("data-title")
+    var year = listItem.getAttribute("data-year")
+    var price = listItem.getAttribute("data-price")
+
+    var idField = document.getElementById("idEdit")
+    idField.value = id
+    //pode ser feito assim
+    //document.getElementById("idEdit").value=id;
+    var titleField = document.getElementById("titleEdit")
+    titleField.value = title
+    var yearField = document.getElementById("yearEdit")
+    yearField.value = year
+    var priceField = document.getElementById("priceEdit")
+    priceField.value = id
+}
+
+function updateGame(){
+       var idInput= document.getElementById("idEdit")
+       var titleInput = document.getElementById("titleEdit")
+       var yearInput = document.getElementById("yearEdit")
+       var priceInput = document.getElementById("priceEdit")
+
+       var game = {
+           title: titleInput.value,
+           year: yearInput.value,
+           price: priceInput.value
+          }
+ var id = idInput.value
+   axios.put("http://localhost:3000/game/" + id,game).then(response=>{
+           //depois melhor essa mensagem de alerta
+       if(response.status == 200){
+               alert("Game atualizado!")
+               
+       }
+   }).catch(err=>{
+           console.log("ocorreu um erro!", err)
+   })
+
+}
+ 
+  
+ axios.get("http://localhost:3000/games").then(response=>{
+    var games = response.data;
+    var list = document.getElementById("games")
+
+    games.forEach(element => {
         //console.log(element)
         //para cada elemento será realizada uma açao, será criado um funcionario, ou item de lista
-        var novoFuncionario = document.createElement("li")
+        var item = document.createElement("li")
         //feito depois
         // adicionar atributos presonalizados, data-id recebe o valor de funcionario.id
-       // novoFuncionario.setAttribute("data-id", element.id)
-        novoFuncionario.setAttribute("data-nome", element.nome)
-        novoFuncionario.setAttribute("data-sobrenome", element.sobrenome)
-        novoFuncionario.setAttribute("data-email", element.email)
-        novoFuncionario.setAttribute("data-cidade", element.cidade)
+       // item.setAttribute("data-id", element.id)
+        item.setAttribute("data-id", element.id)
+        item.setAttribute("data-title", element.title)
+        item.setAttribute("data-year", element.year)
+        item.setAttribute("data-price", element.price)
         
         //ainda não está recebendo o id do mongobd
-        novoFuncionario.innerHTML =element.id +" - " +  element.nome + " - " + element.sobrenome + " - " + element.email + " - " + element.cidade;//carrega os nomes na pasta
+        item.innerHTML =element.id +" - " +  element.title + " - " + element.year + " - " + element.price //carrega os nomes na pasta
 
         //criação de button dinamicamente
         var deleteBtn = document.createElement("button")
         //nomeia o botao
         deleteBtn.innerHTML = "Deletar"
         deleteBtn.addEventListener("click", function () {
-            deleteFuncionario(novoFuncionario)
+            deleteGame(item)
+        })
+        //para cada elemento da lista add um botao
+        item.appendChild(deleteBtn)
+
+        var EditarBtn = document.createElement("button")
+        //nomeia o botao
+        EditarBtn.innerHTML = "Editar"
+        EditarBtn.addEventListener("click", function () {
+            loadForm(item)
         } )
         //para cada elemento da lista add um botao
-        novoFuncionario.appendChild(deleteBtn)
+        item.appendChild(EditarBtn)
 
         //para adicionar esse elemento a lista é chamada a função appendChild("adicionar filho")
-        list.appendChild(novoFuncionario)
+        list.appendChild(item)
     });
 
  }).catch(err =>{
     console.log("Erro no axios", err)
  })
 </script>
- <!-- O then retorna os dados vindo da requisição, nesse caso o cadastro de funcionarios--> 
-</html>
+ <!-- O then retorna os dados vindo da requisição, nesse caso o cadastro de games--> 
+</html>    

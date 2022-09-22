@@ -2,9 +2,10 @@ const express = require('express')
 const app = express()
 const port = 3000
 const bodyParser = require('body-parser')
+const cors = require('cors')
 
 
-
+app.use(cors())
 //config body-parser
 app.use(bodyParser.urlencoded({extended:false}))
 //converter o corpo da requisição para json
@@ -68,7 +69,7 @@ app.post('/game', (req, res)=>{
     var {title, year, price} = req.body
     //é importante fazer validações
     DB.games.push({
-        id:00,
+        id:0,
         title,
         year,
         price
